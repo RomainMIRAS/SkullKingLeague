@@ -1,0 +1,18 @@
+# Configuration pour le dossier public
+
+# Permettre l'accès au point d'entrée principal
+DirectoryIndex index.php
+
+# Redirection pour les URLs propres
+RewriteEngine On
+
+# Rediriger toutes les requêtes vers index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Sécurité supplémentaire
+<Files "*.log">
+    Order allow,deny
+    Deny from all
+</Files>

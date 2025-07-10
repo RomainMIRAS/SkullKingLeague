@@ -1,0 +1,231 @@
+/* Styles personnalisés pour Skull King League */
+
+:root {
+    --skull-primary: #1a1a1a;
+    --skull-secondary: #d4d4d4;
+    --skull-accent: #ff6b6b;
+    --skull-success: #51cf66;
+    --skull-warning: #ffd43b;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-lg {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+}
+
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-dark th {
+    border: none;
+    background-color: var(--skull-primary);
+}
+
+.badge {
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-weight: 500;
+}
+
+.progress {
+    border-radius: 10px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Animations pour les scores */
+.score-input {
+    transition: all 0.3s ease;
+}
+
+.score-input:focus {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+/* Styles pour les modals */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Styles pour les alertes */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+/* Styles pour le classement */
+.ranking-position {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Styles pour les icônes de statut */
+.status-icon {
+    font-size: 1.2rem;
+}
+
+/* Styles pour le footer */
+footer {
+    margin-top: auto;
+}
+
+/* Styles pour les cartes statistiques */
+.stats-card .card-body {
+    padding: 2rem;
+}
+
+.stats-card i {
+    opacity: 0.8;
+}
+
+/* Styles pour les formulaires */
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Styles pour les checkboxes des joueurs */
+.player-checkbox:checked + label {
+    background-color: #e7f3ff;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-weight: 500;
+}
+
+/* Animation d'apparition */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Styles pour les onglets admin */
+.admin-nav .nav-link {
+    color: #495057;
+    border-radius: 8px;
+    margin-right: 8px;
+}
+
+.admin-nav .nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Styles pour les boutons d'action */
+.action-buttons .btn {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Styles pour le loader */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Styles pour les scores négatifs/positifs */
+.score-positive {
+    color: var(--skull-success);
+    font-weight: bold;
+}
+
+.score-negative {
+    color: var(--skull-accent);
+    font-weight: bold;
+}
+
+/* Styles pour les badges ELO */
+.elo-badge {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    border-radius: 15px;
+}
+
+/* Styles pour le podium */
+.podium-first {
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    color: #000;
+}
+
+.podium-second {
+    background: linear-gradient(135deg, #c0c0c0, #e5e5e5);
+    color: #000;
+}
+
+.podium-third {
+    background: linear-gradient(135deg, #cd7f32, #daa520);
+    color: #fff;
+}
