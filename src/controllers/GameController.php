@@ -171,6 +171,17 @@ switch($action) {
         $players = $game->getPlayersForRanking($game_id);
         $rounds = $game->getRounds($game_id);
         
+        // Récupérer l'historique ELO pour cette partie
+        $elo_history_query = "SELECT eh.*, u.pseudo 
+                              FROM elo_history eh 
+                              JOIN users u ON eh.user_id = u.id 
+                              WHERE eh.game_id = ? 
+                              ORDER BY eh.rank ASC";
+        $elo_stmt = $db->prepare($elo_history_query);
+        $elo_stmt->bindParam(1, $game_id);
+        $elo_stmt->execute();
+        $elo_history = $elo_stmt->fetchAll(PDO::FETCH_ASSOC);
+        
         include '../src/views/game_details.php';
         break;
 

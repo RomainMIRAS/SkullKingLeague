@@ -81,17 +81,18 @@ try {
     // Table elo_history
     echo "📈 Création de la table elo_history...\n";
     $pdo->exec("CREATE TABLE IF NOT EXISTS elo_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    game_id INT NOT NULL,
-    user_id INT NOT NULL,
-    old_elo INT NOT NULL,
-    new_elo INT NOT NULL,
-    elo_change INT NOT NULL,
-    rank INT NOT NULL COMMENT 'Rang réel du joueur dans la partie',
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (game_id) REFERENCES games(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        game_id INT NOT NULL,
+        user_id INT NOT NULL,
+        old_elo INT NOT NULL,
+        new_elo INT NOT NULL,
+        elo_change INT NOT NULL,
+        rank INT NOT NULL COMMENT 'Rang réel du joueur dans la partie',
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (game_id) REFERENCES games(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
     )");
+    echo "✅ Table elo_history créée\n";
 
     
     // Table admin (pour l'authentification)

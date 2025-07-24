@@ -153,6 +153,56 @@
             </table>
         </div>
         <?php endif; ?>
+        
+        <!-- Section ELO History -->
+        <?php if (isset($elo_history) && !empty($elo_history)): ?>
+        <hr>
+        <h6><i class="bi bi-graph-up text-info"></i> Changements ELO :</h6>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+                <thead class="table-info">
+                    <tr>
+                        <th>Rang</th>
+                        <th>Joueur</th>
+                        <th>ELO Avant</th>
+                        <th>ELO Après</th>
+                        <th>Changement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($elo_history as $history): ?>
+                    <tr>
+                        <td>
+                            <?php if ($history['rank'] == 1): ?>
+                                <i class="bi bi-trophy-fill text-warning"></i> <?php echo $history['rank']; ?>
+                            <?php else: ?>
+                                <?php echo $history['rank']; ?>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <strong><?php echo htmlspecialchars($history['pseudo']); ?></strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary"><?php echo $history['old_elo']; ?></span>
+                        </td>
+                        <td>
+                            <span class="badge bg-primary"><?php echo $history['new_elo']; ?></span>
+                        </td>
+                        <td>
+                            <?php if ($history['elo_change'] > 0): ?>
+                                <span class="badge bg-success">+<?php echo $history['elo_change']; ?></span>
+                            <?php elseif ($history['elo_change'] < 0): ?>
+                                <span class="badge bg-danger"><?php echo $history['elo_change']; ?></span>
+                            <?php else: ?>
+                                <span class="badge bg-warning">0</span>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 <?php else: ?>

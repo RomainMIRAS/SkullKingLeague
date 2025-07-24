@@ -1,6 +1,6 @@
 <?php
 class EloCalculator {
-    const K_FACTOR = 32;
+    const K_FACTOR = 200;
     
     public static function calculateNewElo($player_elo, $opponent_elos, $result) {
         // result: 1 pour victoire, 0 pour défaite
@@ -15,60 +15,6 @@ class EloCalculator {
         $new_elo = $player_elo + self::K_FACTOR * ($result - $expected);
         
         return round($new_elo);
-    }
-    
-    /**
-     * Calcule les nouveaux ELOs selon un système où :
-     * - La moitié supérieure gagne des points
-     * - La moitié inférieure perd des points
-     * - Le joueur du milieu (en cas d'effectif impair) ne change pas de points
-     * - L'impact est plus fort aux extrémités du classement
-     */
-    public static function calculateNewEloByRanking($player_rank, $total_players, $player_elo) {
-        // Déterminer si le joueur est dans la moitié supérieure, inférieure ou au milieu
-        $middle_position = ceil($total_players / 2);
-        
-        // Si nombre de joueurs impair et joueur au milieu, pas de changement
-        if ($total_players % 2 != 0 && $player_rank == $middle_position) {
-            return $player_elo;
-        }
-        
-        // Calcul du coefficient basé sur la position par rapport aux extrêmes
-        // Plus on est proche des extrêmes, plus l'impact est fort
-        $max_impact = self::K_FACTOR; // Impact maximal
-        
-        if ($player_rank <= $middle_position) {
-            // Moitié supérieure : gain d'ELO
-            // Position 1 a l'impact maximum, position proche du milieu a un impact minimum
-            
-            // Eviter division par zéro pour les petits nombres de joueurs (cas à 2 joueurs)
-            if ($middle_position <= 1) {
-                $normalized_position = 1; // Max impact pour le premier joueur si 2 joueurs
-            } else {
-                // Correction pour le cas à 4 joueurs où middle_position = 2
-                $normalized_position = ($middle_position - $player_rank + 1) / $middle_position;
-            }
-            
-            // S'assurer que la valeur est entre 0 et 1
-            $normalized_position = max(0, min(1, $normalized_position));
-            $elo_change = $max_impact * $normalized_position;
-            return round($player_elo + $elo_change);
-        } else {
-            // Moitié inférieure : perte d'ELO
-            // Dernière position a l'impact maximum, position proche du milieu a un impact minimum
-            
-            // Eviter division par zéro
-            if ($total_players - $middle_position <= 0) {
-                $normalized_position = 1;
-            } else {
-                $normalized_position = ($player_rank - $middle_position) / ($total_players - $middle_position);
-            }
-            
-            // S'assurer que la valeur est entre 0 et 1
-            $normalized_position = max(0, min(1, $normalized_position));
-            $elo_change = $max_impact * $normalized_position;
-            return round($player_elo - $elo_change);
-        }
     }
     
     public static function updateElosAfterGame($db, $game_id, $winner_id) {
@@ -118,7 +64,28 @@ class EloCalculator {
             // Utiliser le rang réel qui tient compte des égalités
             $player_rank = $real_ranks[$index];
             
-            $new_elo = self::calculateNewEloByRanking($player_rank, $total_players, $player_elo);
+            // Calculer le résultat normalisé entre 0 et 1 basé sur la position
+            // Position 1 = 1.0, dernière position = 0.0, milieu = 0.5
+            // Pour les égalités, utiliser la moyenne des positions qu'ils auraient occupées
+            $tied_positions = [];
+            foreach ($real_ranks as $other_index => $other_rank) {
+                if ($other_rank == $player_rank) {
+                    $tied_positions[] = $other_index + 1; // +1 car les indices commencent à 0
+                }
+            }
+            
+            // Calculer la position moyenne pour les égalités
+            $average_position = array_sum($tied_positions) / count($tied_positions);
+            
+            // Normaliser entre 0 et 1 (position 1 = 1.0, dernière = 0.0)
+            $normalized_result = ($total_players - $average_position) / ($total_players - 1);
+            
+            // Gérer le cas où il n'y a qu'un joueur
+            if ($total_players == 1) {
+                $normalized_result = 1.0;
+            }
+            
+            $new_elo = self::calculateNewElo($player_elo, array_column($players, 'elo'), $normalized_result);
             
             // Stocker l'ancien et le nouveau ELO pour affichage ultérieur
             $elo_changes[$player_id] = [
