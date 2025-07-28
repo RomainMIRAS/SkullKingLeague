@@ -147,6 +147,35 @@ class Game {
         return $stmt;
     }
 
+    public function getGamesInProgress($limit = 20) {
+        $query = "SELECT g.*, 
+                         COUNT(gp.user_id) as nombre_joueurs,
+                         MAX(r.numero_manche) as derniere_manche
+                  FROM " . $this->table_name . " g
+                  LEFT JOIN game_players gp ON g.id = gp.game_id
+                  LEFT JOIN rounds r ON g.id = r.game_id
+                  WHERE g.status = 'en_cours'
+                  GROUP BY g.id
+                  ORDER BY g.date_partie DESC 
+                  LIMIT ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function getPlayersForGame($game_id) {
+        $query = "SELECT gp.*, u.pseudo 
+                  FROM game_players gp
+                  JOIN users u ON gp.user_id = u.id
+                  WHERE gp.game_id = ?
+                  ORDER BY gp.player_order ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $game_id);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getCurrentRound($game_id) {
         $query = "SELECT MAX(numero_manche) as derniere_manche 
                   FROM rounds 

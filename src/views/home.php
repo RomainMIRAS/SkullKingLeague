@@ -16,7 +16,7 @@ $users = $user->getAll();
         </div>
 
         <div class="row g-4">
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-3">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <i class="bi bi-plus-circle-fill text-success" style="font-size: 3rem;"></i>
@@ -29,7 +29,20 @@ $users = $user->getAll();
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-play-circle-fill text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Parties en cours</h5>
+                        <p class="card-text">Continuez une partie en cours</p>
+                        <a href="index.php?page=games_in_progress" class="btn btn-primary">
+                            Voir les parties
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <i class="bi bi-trophy-fill text-warning" style="font-size: 3rem;"></i>
@@ -42,7 +55,7 @@ $users = $user->getAll();
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-3">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <i class="bi bi-clock-history text-info" style="font-size: 3rem;"></i>
@@ -61,6 +74,7 @@ $users = $user->getAll();
         $stats_query = "SELECT 
             (SELECT COUNT(*) FROM users) as total_users,
             (SELECT COUNT(*) FROM games WHERE status = 'terminee') as total_games,
+            (SELECT COUNT(*) FROM games WHERE status = 'en_cours') as games_in_progress,
             (SELECT pseudo FROM users ORDER BY elo DESC LIMIT 1) as top_player
         ";
         $stats = $db->query($stats_query)->fetch(PDO::FETCH_ASSOC);
@@ -74,15 +88,19 @@ $users = $user->getAll();
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <h3 class="text-primary"><?php echo $stats['total_users']; ?></h3>
                                 <p>Joueurs inscrits</p>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <h3 class="text-success"><?php echo $stats['total_games']; ?></h3>
                                 <p>Parties jouées</p>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <h3 class="text-info"><?php echo $stats['games_in_progress']; ?></h3>
+                                <p>Parties en cours</p>
+                            </div>
+                            <div class="col-md-3">
                                 <h3 class="text-warning"><?php echo $stats['top_player']; ?></h3>
                                 <p>Joueur #1</p>
                             </div>
