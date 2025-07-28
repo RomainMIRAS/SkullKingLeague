@@ -40,6 +40,7 @@ try {
         date_partie TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         gagnant_id INT,
         status ENUM('en_cours', 'terminee') DEFAULT 'en_cours',
+        is_ranked BOOLEAN DEFAULT TRUE COMMENT 'Whether the game affects ELO ratings',
         FOREIGN KEY (gagnant_id) REFERENCES users(id)
     )");
     echo "✅ Table games créée\n";
@@ -76,6 +77,7 @@ try {
     echo "📊 Ajout des index pour optimisation...\n";
     $pdo->exec("CREATE INDEX idx_game_players_order ON game_players(game_id, player_order)");
     $pdo->exec("CREATE INDEX idx_rounds_starting_player ON rounds(game_id, numero_manche, starting_player_id)");
+    $pdo->exec("CREATE INDEX idx_games_ranked ON games(is_ranked)");
     echo "✅ Index créés\n";
 
     // Table elo_history
