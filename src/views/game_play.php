@@ -13,6 +13,14 @@
                 </div>
                 <?php endif; ?>
                 
+                <?php if (isset($_GET['success'])): ?>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <strong>Succès :</strong> <?php echo htmlspecialchars($_GET['success']); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php endif; ?>
+                
                 <?php if ($current_round <= 10): ?>
                 
                 <!-- Scores actuels -->
@@ -163,12 +171,22 @@
                                 ?>
                                 <th><?php echo htmlspecialchars($player['pseudo']); ?></th>
                                 <?php endwhile; ?>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php for ($i = $current_round - 1; $i >= 1; $i--): ?>
-                            <tr>
-                                <td><strong>Manche <?php echo $i; ?></strong></td>
+                            <?php for ($i = $current_round - 1; $i >= 1; $i--): 
+                                $is_modified = $game->isRoundModified($game_id, $i);
+                            ?>
+                            <tr class="<?php echo $is_modified ? 'table-warning' : ''; ?>">
+                                <td>
+                                    <strong>Manche <?php echo $i; ?></strong>
+                                    <?php if ($is_modified): ?>
+                                    <br><small class="text-warning">
+                                        <i class="bi bi-pencil-square"></i> Modifiée
+                                    </small>
+                                    <?php endif; ?>
+                                </td>
                                 <?php 
                                 $players->execute();
                                 while ($player = $players->fetch(PDO::FETCH_ASSOC)): 
@@ -180,10 +198,25 @@
                                     </span>
                                 </td>
                                 <?php endwhile; ?>
+                                <td>
+                                    <a href="index.php?page=game&action=edit_round&id=<?php echo $game_id; ?>&round=<?php echo $i; ?>" 
+                                       class="btn btn-sm btn-outline-warning" 
+                                       title="Modifier cette manche">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </td>
                             </tr>
                             <?php endfor; ?>
                         </tbody>
                     </table>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle"></i>
+                    <small>
+                        <strong>Info :</strong> Vous pouvez modifier les scores des manches précédentes en cliquant sur le bouton 
+                        <i class="bi bi-pencil"></i>. Les manches modifiées sont mises en évidence en jaune.
+                    </small>
                 </div>
             </div>
         </div>

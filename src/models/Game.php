@@ -65,7 +65,7 @@ class Game {
     }
 
     public function getRounds($game_id) {
-        $query = "SELECT r.*, u.pseudo 
+        $query = "SELECT r.*, u.pseudo, r.modified_at
                   FROM rounds r
                   JOIN users u ON r.player_id = u.id
                   WHERE r.game_id = ?
@@ -74,6 +74,28 @@ class Game {
         $stmt->bindParam(1, $game_id);
         $stmt->execute();
         return $stmt;
+    }
+
+    public function getRoundsData($game_id) {
+        $query = "SELECT r.*, u.pseudo, r.modified_at
+                  FROM rounds r
+                  JOIN users u ON r.player_id = u.id
+                  WHERE r.game_id = ?
+                  ORDER BY r.numero_manche, r.player_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $game_id);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function isRoundModified($game_id, $numero_manche) {
+        $query = "SELECT COUNT(*) FROM rounds 
+                  WHERE game_id = ? AND numero_manche = ? AND modified_at IS NOT NULL";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $game_id);
+        $stmt->bindParam(2, $numero_manche);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
     }
 
     public function addRound($game_id, $numero_manche, $scores) {
@@ -96,6 +118,50 @@ class Game {
             $this->updatePlayerScore($game_id, $player_id, $score);
         }
         return true;
+    }
+
+    public function updateRound($game_id, $numero_manche, $scores) {
+        // Mettre à jour les scores de la manche existante
+        $query = "UPDATE rounds SET score = ?, modified_at = CURRENT_TIMESTAMP WHERE game_id = ? AND numero_manche = ? AND player_id = ?";
+        $stmt = $this->conn->prepare($query);
+        
+        foreach($scores as $player_id => $score) {
+            $stmt->bindParam(1, $score);
+            $stmt->bindParam(2, $game_id);
+            $stmt->bindParam(3, $numero_manche);
+            $stmt->bindParam(4, $player_id);
+            $stmt->execute();
+        }
+        
+        // Recalculer tous les scores totaux pour tous les joueurs de cette partie
+        $this->recalculateAllPlayerScores($game_id);
+        
+        return true;
+    }
+
+    public function getRoundScores($game_id, $numero_manche) {
+        $query = "SELECT r.player_id, r.score, u.pseudo 
+                  FROM rounds r
+                  JOIN users u ON r.player_id = u.id
+                  WHERE r.game_id = ? AND r.numero_manche = ?
+                  ORDER BY r.player_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $game_id);
+        $stmt->bindParam(2, $numero_manche);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function recalculateAllPlayerScores($game_id) {
+        // Récupérer tous les joueurs de cette partie
+        $players_query = "SELECT user_id FROM game_players WHERE game_id = ?";
+        $players_stmt = $this->conn->prepare($players_query);
+        $players_stmt->bindParam(1, $game_id);
+        $players_stmt->execute();
+        
+        while ($player = $players_stmt->fetch(PDO::FETCH_ASSOC)) {
+            $this->updatePlayerScore($game_id, $player['user_id'], 0); // Le score 0 n'est pas utilisé, la méthode recalcule tout
+        }
     }
 
     private function updatePlayerScore($game_id, $player_id, $score) {

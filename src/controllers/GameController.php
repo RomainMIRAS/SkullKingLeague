@@ -130,6 +130,72 @@ switch($action) {
         header("Location: index.php?page=game&action=play&id=" . ($_POST['game_id'] ?? ''));
         exit;
 
+    case 'edit_round':
+        $game_id = $_GET['id'] ?? null;
+        $round_number = $_GET['round'] ?? null;
+        
+        if (!$game_id || !$round_number) {
+            header("Location: index.php");
+            exit;
+        }
+
+        $game_data = $game->getById($game_id);
+        if (!$game_data || $game_data['status'] != 'en_cours') {
+            header("Location: index.php");
+            exit;
+        }
+
+        $players = $game->getPlayersInOrder($game_id);
+        $round_scores = $game->getRoundScores($game_id, $round_number);
+        $current_round = $game->getCurrentRound($game_id);
+        
+        // Vérifier que la manche à éditer existe et est antérieure à la manche actuelle
+        if ($round_number >= $current_round) {
+            header("Location: index.php?page=game&action=play&id=" . $game_id . "&error=" . urlencode("Impossible d'éditer cette manche"));
+            exit;
+        }
+        
+        include '../src/views/game_edit_round.php';
+        break;
+
+    case 'update_round':
+        if ($_POST && isset($_POST['game_id']) && isset($_POST['scores']) && isset($_POST['round_number'])) {
+            $game_id = $_POST['game_id'];
+            $scores = $_POST['scores'];
+            $round_number = $_POST['round_number'];
+            
+            // Validation des scores (même que pour add_round)
+            $valid = true;
+            $error_message = '';
+            
+            foreach($scores as $player_id => $score) {
+                if (!is_numeric($score)) {
+                    $valid = false;
+                    $error_message = 'Tous les scores doivent être des nombres.';
+                    break;
+                }
+                
+                $score_int = intval($score);
+                if ($score_int % 10 !== 0) {
+                    $valid = false;
+                    $error_message = 'Tous les scores doivent être des multiples de 10.';
+                    break;
+                }
+            }
+            
+            if ($valid) {
+                $game->updateRound($game_id, $round_number, $scores);
+                header("Location: index.php?page=game&action=play&id=" . $game_id . "&success=" . urlencode("Manche $round_number modifiée avec succès"));
+                exit;
+            } else {
+                header("Location: index.php?page=game&action=edit_round&id=" . $game_id . "&round=" . $round_number . "&error=" . urlencode($error_message));
+                exit;
+            }
+        }
+        
+        header("Location: index.php");
+        exit;
+
     case 'finish':
         $game_id = $_GET['id'] ?? null;
         if (!$game_id) {

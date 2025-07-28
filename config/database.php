@@ -2,8 +2,8 @@
 class Database {
     private $host = 'localhost';
     private $db_name = 'skull_king_league';
-    private $username = 'skullking_user';
-    private $password = 'SkullKing_2025!';
+    private $username = 'root';
+    private $password = '';
     private $conn;
 
     public function getConnection() {
