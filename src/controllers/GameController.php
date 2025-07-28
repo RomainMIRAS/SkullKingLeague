@@ -16,7 +16,7 @@ switch($action) {
         if ($_POST && isset($_POST['players']) && is_array($_POST['players'])) {
             $player_ids = $_POST['players'];
             
-            if (count($player_ids) >= 1 && count($player_ids) <= 6) {
+            if (count($player_ids) >= 1 && count($player_ids) <= 8) {
                 // Les joueurs sont déjà dans l'ordre souhaité grâce à l'interface
                 $game_id = $game->create($player_ids);
                 if ($game_id) {

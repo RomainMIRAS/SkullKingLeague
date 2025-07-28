@@ -110,7 +110,17 @@ $users = $user->getAll();
                         <!-- Liste des joueurs disponibles -->
                         <div class="col-md-6">
                             <h6><i class="bi bi-people-fill"></i> Joueurs disponibles</h6>
-                            <p class="text-muted small">Cliquez pour sélectionner (1 à 6 joueurs)</p>
+                            <p class="text-muted small">Cliquez pour sélectionner (1 à 8 joueurs)</p>
+                            <!-- Search bar -->
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" id="player-search" placeholder="Rechercher un joueur...">
+                                    <button class="btn btn-outline-secondary" type="button" id="clear-search">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <div id="available-players" class="list-group">
                                 <?php 
                                 $users->execute(); // Reset le curseur
@@ -166,7 +176,7 @@ $users = $user->getAll();
                     
                     <div id="player-count-warning" class="alert alert-warning mt-3" style="display: none;">
                         <i class="bi bi-exclamation-triangle-fill"></i>
-                        Veuillez sélectionner entre 1 et 6 joueurs.
+                        Veuillez sélectionner entre 1 et 8 joueurs.
                     </div>
                 </div>
                 <div class="modal-footer">
