@@ -14,9 +14,12 @@ function initNewGameInterface() {
     const randomizeBtn = document.getElementById('randomizeOrder');
     const clearAllBtn = document.getElementById('clearAll');
     const newGameForm = document.getElementById('newGameForm');
+    const playerSearchInput = document.getElementById('player-search');
+    const clearSearchBtn = document.getElementById('clear-search');
 
     let selectedPlayers = [];
     let draggedElement = null;
+    let allPlayers = []; // Store all players for search filtering
 
     // Vérifier que tous les éléments existent
     if (!availablePlayersContainer || !selectedPlayersContainer) {
@@ -24,10 +27,28 @@ function initNewGameInterface() {
         return;
     }
 
+    // Initialize all players from the container
+    initializeAllPlayers();
+
+    // Search functionality
+    if (playerSearchInput) {
+        playerSearchInput.addEventListener('input', function() {
+            filterPlayers(this.value);
+        });
+    }
+
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', function() {
+            playerSearchInput.value = '';
+            filterPlayers('');
+            playerSearchInput.focus();
+        });
+    }
+
     // Événement de clic sur les joueurs disponibles
     availablePlayersContainer.addEventListener('click', function(e) {
         const playerItem = e.target.closest('.available-player');
-        if (playerItem && selectedPlayers.length < 6) {
+        if (playerItem && selectedPlayers.length < 8) {
             selectPlayer(playerItem);
         }
     });
@@ -58,6 +79,11 @@ function initNewGameInterface() {
         addPlayerToSelectedList(playerData);
 
         updateInterface();
+        
+        // Update search results after selection
+        if (playerSearchInput && playerSearchInput.value) {
+            filterPlayers(playerSearchInput.value);
+        }
     }
 
     // Fonction pour ajouter un joueur à la liste sélectionnée
@@ -216,6 +242,11 @@ function initNewGameInterface() {
         }
 
         updateInterface();
+        
+        // Update search results after removal
+        if (playerSearchInput && playerSearchInput.value) {
+            filterPlayers(playerSearchInput.value);
+        }
     }
 
     // Fonction pour mettre à jour l'interface
@@ -241,7 +272,7 @@ function initNewGameInterface() {
         }
 
         // Validation
-        const isValid = count >= 1 && count <= 6;
+        const isValid = count >= 1 && count <= 8;
         if (startGameBtn) {
             startGameBtn.disabled = !isValid;
         }
@@ -321,6 +352,12 @@ function initNewGameInterface() {
             selectedElements.forEach(element => element.remove());
             
             updateInterface();
+            
+            // Clear search after clearing all players
+            if (playerSearchInput) {
+                playerSearchInput.value = '';
+                filterPlayers('');
+            }
         });
     }
 
@@ -343,7 +380,7 @@ function initNewGameInterface() {
         newGameForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            if (selectedPlayers.length >= 1 && selectedPlayers.length <= 6) {
+            if (selectedPlayers.length >= 1 && selectedPlayers.length <= 8) {
                 // Supprimer les anciens champs cachés s'ils existent
                 const existingInputs = newGameForm.querySelectorAll('input[name="players[]"]');
                 existingInputs.forEach(input => input.remove());
@@ -361,6 +398,56 @@ function initNewGameInterface() {
                 newGameForm.submit();
             }
         });
+    }
+
+    // Initialize all players data from the DOM
+    function initializeAllPlayers() {
+        const playerElements = availablePlayersContainer.querySelectorAll('.available-player');
+        allPlayers = Array.from(playerElements).map(element => ({
+            id: element.getAttribute('data-player-id'),
+            name: element.getAttribute('data-player-name'),
+            elo: element.getAttribute('data-player-elo'),
+            element: element
+        }));
+    }
+
+    // Filter players based on search term
+    function filterPlayers(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        
+        allPlayers.forEach(player => {
+            const matchesSearch = player.name.toLowerCase().includes(term);
+            const isSelected = selectedPlayers.find(p => p.id === player.id);
+            
+            if (matchesSearch && !isSelected) {
+                player.element.style.display = 'block';
+            } else if (!isSelected) {
+                player.element.style.display = 'none';
+            }
+        });
+
+        // Show "no results" message if no players are visible
+        const visiblePlayers = allPlayers.filter(player => 
+            player.element.style.display !== 'none' && 
+            !selectedPlayers.find(p => p.id === player.id)
+        );
+
+        showNoResultsMessage(visiblePlayers.length === 0 && term !== '');
+    }
+
+    // Show/hide no results message
+    function showNoResultsMessage(show) {
+        let noResultsMsg = document.getElementById('no-results-message');
+        
+        if (show && !noResultsMsg) {
+            noResultsMsg = document.createElement('div');
+            noResultsMsg.id = 'no-results-message';
+            noResultsMsg.className = 'text-center text-muted p-3';
+            noResultsMsg.innerHTML = '<i class="bi bi-search"></i><br>Aucun joueur trouvé';
+            availablePlayersContainer.appendChild(noResultsMsg);
+        } else if (!show && noResultsMsg) {
+            noResultsMsg.remove();
+        }
     }
 
     // Initialisation
