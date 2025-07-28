@@ -9,15 +9,17 @@ class Game {
     public $date_partie;
     public $gagnant_id;
     public $status;
+    public $is_ranked;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    public function create($player_ids) {
+    public function create($player_ids, $is_ranked = true) {
         // Créer la partie
-        $query = "INSERT INTO " . $this->table_name . " (status) VALUES ('en_cours')";
+        $query = "INSERT INTO " . $this->table_name . " (status, is_ranked) VALUES ('en_cours', ?)";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $is_ranked, PDO::PARAM_BOOL);
         
         if($stmt->execute()) {
             $game_id = $this->conn->lastInsertId();

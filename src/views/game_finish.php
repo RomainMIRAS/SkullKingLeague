@@ -10,7 +10,20 @@
                 <!-- Podium -->
                 <div class="text-center mb-4">
                     <h4>🏆 Félicitations <?php echo htmlspecialchars($game_data['gagnant_pseudo']); ?> !</h4>
-                    <p class="lead">Partie terminée le <?php echo date('d/m/Y à H:i', strtotime($game_data['date_partie'])); ?></p>
+                    <p class="lead">
+                        Partie terminée le <?php echo date('d/m/Y à H:i', strtotime($game_data['date_partie'])); ?>
+                        <?php if (isset($game_data['is_ranked'])): ?>
+                            <?php if ($game_data['is_ranked']): ?>
+                                <span class="badge bg-warning text-dark ms-2">
+                                    <i class="bi bi-trophy"></i> Classée
+                                </span>
+                            <?php else: ?>
+                                <span class="badge bg-secondary ms-2">
+                                    <i class="bi bi-heart"></i> Amicale
+                                </span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </p>
                 </div>
 
                 <!-- Classement final -->
@@ -89,32 +102,40 @@
                                 </td>
                                 <td>
                                     <?php
-                                    // Récupérer le changement d'ELO pour ce joueur
-                                    $elo_data = isset($elo_changes[$player['user_id']]) ? $elo_changes[$player['user_id']] : null;
-                                    $old_elo = $elo_data ? $elo_data['old_elo'] : $user_data['elo'];
-                                    $new_elo = $elo_data ? $elo_data['new_elo'] : $user_data['elo'];
-                                    $change = $elo_data ? $elo_data['elo_change'] : 0;
-                                    
-                                    // Définir la couleur et l'icône en fonction du changement d'ELO
-                                    $badge_class = "bg-info";
-                                    $icon_class = "bi-dash";
-                                    $text_class = "text-secondary";
-                                    
-                                    if ($change > 0) {
-                                        $badge_class = "bg-success";
-                                        $icon_class = "bi-arrow-up";
-                                        $text_class = "text-success";
-                                    } elseif ($change < 0) {
-                                        $badge_class = "bg-danger";
-                                        $icon_class = "bi-arrow-down";
-                                        $text_class = "text-danger";
+                                    // Vérifier si la partie était classée
+                                    if (isset($game_data['is_ranked']) && !$game_data['is_ranked']) {
+                                        // Partie non classée - pas de changement d'ELO
+                                        echo '<span class="badge bg-secondary">Non classée</span>';
+                                    } else {
+                                        // Récupérer le changement d'ELO pour ce joueur
+                                        $elo_data = isset($elo_changes[$player['user_id']]) ? $elo_changes[$player['user_id']] : null;
+                                        $old_elo = $elo_data ? $elo_data['old_elo'] : $user_data['elo'];
+                                        $new_elo = $elo_data ? $elo_data['new_elo'] : $user_data['elo'];
+                                        $change = $elo_data ? $elo_data['elo_change'] : 0;
+                                        
+                                        // Définir la couleur et l'icône en fonction du changement d'ELO
+                                        $badge_class = "bg-info";
+                                        $icon_class = "bi-dash";
+                                        $text_class = "text-secondary";
+                                        
+                                        if ($change > 0) {
+                                            $badge_class = "bg-success";
+                                            $icon_class = "bi-arrow-up";
+                                            $text_class = "text-success";
+                                        } elseif ($change < 0) {
+                                            $badge_class = "bg-danger";
+                                            $icon_class = "bi-arrow-down";
+                                            $text_class = "text-danger";
+                                        }
+                                        ?>
+                                        <span class="badge <?php echo $badge_class; ?>"><?php echo $new_elo; ?> ELO</span>
+                                        <i class="bi <?php echo $icon_class; ?> <?php echo $text_class; ?>"></i>
+                                        <small class="<?php echo $text_class; ?>">
+                                            <?php echo $change > 0 ? '+' . $change : $change; ?>
+                                        </small>
+                                        <?php
                                     }
                                     ?>
-                                    <span class="badge <?php echo $badge_class; ?>"><?php echo $new_elo; ?> ELO</span>
-                                    <i class="bi <?php echo $icon_class; ?> <?php echo $text_class; ?>"></i>
-                                    <small class="<?php echo $text_class; ?>">
-                                        <?php echo $change > 0 ? '+' . $change : $change; ?>
-                                    </small>
                                 </td>
                             </tr>
                             <?php 

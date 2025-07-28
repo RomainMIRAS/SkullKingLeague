@@ -4,6 +4,17 @@
         <h5>
             <i class="bi bi-calendar3"></i> 
             Partie du <?php echo date('d/m/Y à H:i', strtotime($game_data['date_partie'])); ?>
+            <?php if (isset($game_data['is_ranked'])): ?>
+                <?php if ($game_data['is_ranked']): ?>
+                    <span class="badge bg-warning text-dark ms-2">
+                        <i class="bi bi-trophy"></i> Classée
+                    </span>
+                <?php else: ?>
+                    <span class="badge bg-secondary ms-2">
+                        <i class="bi bi-heart"></i> Amicale
+                    </span>
+                <?php endif; ?>
+            <?php endif; ?>
         </h5>
     </div>
     <div class="card-body">
@@ -201,6 +212,12 @@
                     <?php endforeach; ?>
                 </tbody>
             </table>
+        </div>
+        <?php elseif (isset($game_data['is_ranked']) && !$game_data['is_ranked']): ?>
+        <hr>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Cette partie amicale n'affecte pas les classements ELO.
         </div>
         <?php endif; ?>
     </div>

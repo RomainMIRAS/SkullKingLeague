@@ -15,10 +15,11 @@ switch($action) {
     case 'create':
         if ($_POST && isset($_POST['players']) && is_array($_POST['players'])) {
             $player_ids = $_POST['players'];
+            $is_ranked = isset($_POST['is_ranked']) ? (bool)$_POST['is_ranked'] : true;
             
             if (count($player_ids) >= 1 && count($player_ids) <= 6) {
                 // Les joueurs sont déjà dans l'ordre souhaité grâce à l'interface
-                $game_id = $game->create($player_ids);
+                $game_id = $game->create($player_ids, $is_ranked);
                 if ($game_id) {
                     header("Location: index.php?page=game&action=play&id=" . $game_id);
                     exit;
@@ -113,8 +114,11 @@ switch($action) {
                         $user->incrementStats($player['user_id'] == $winner_id);
                     }
                     
-                    // Calculer les nouveaux ELO
-                    EloCalculator::updateElosAfterGame($db, $game_id, $winner_id);
+                    // Calculer les nouveaux ELO seulement si la partie est classée
+                    $game_data = $game->getById($game_id);
+                    if ($game_data && $game_data['is_ranked']) {
+                        EloCalculator::updateElosAfterGame($db, $game_id, $winner_id);
+                    }
                     
                     header("Location: index.php?page=game&action=finish&id=" . $game_id);
                     exit;

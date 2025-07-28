@@ -23,6 +23,7 @@ $games = $game->getAll(50);
                                 <th>Date</th>
                                 <th>Gagnant</th>
                                 <th>Joueurs</th>
+                                <th>Type</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -39,6 +40,17 @@ $games = $game->getAll(50);
                                 </td>
                                 <td>
                                     <span class="badge bg-primary"><?php echo $row['nombre_joueurs']; ?> joueurs</span>
+                                </td>
+                                <td>
+                                    <?php if (isset($row['is_ranked']) && $row['is_ranked']): ?>
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-trophy"></i> Classée
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-heart"></i> Amicale
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-info" 

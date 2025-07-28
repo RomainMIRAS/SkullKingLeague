@@ -159,6 +159,23 @@ $users = $user->getAll();
                         </div>
                     </div>
                     
+                    <!-- Ranked/Unranked Option -->
+                    <div class="mt-4">
+                        <h6><i class="bi bi-trophy-fill"></i> Type de partie</h6>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_ranked" name="is_ranked" value="1" checked>
+                            <label class="form-check-label" for="is_ranked">
+                                <strong>Partie classée (ELO)</strong>
+                            </label>
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i>
+                            <span id="ranked-description">
+                                Les parties classées affectent votre classement ELO. Désactivez pour une partie amicale.
+                            </span>
+                        </div>
+                    </div>
+                    
                     <div id="player-count-info" class="alert alert-info mt-3" style="display: none;">
                         <i class="bi bi-info-circle-fill"></i>
                         <span id="selected-count">0</span> joueur(s) sélectionné(s)
@@ -182,3 +199,15 @@ $users = $user->getAll();
 
 <!-- Inclure le JavaScript pour la nouvelle interface de création de partie -->
 <script src="../assets/js/new-game.js"></script>
+
+<script>
+// Update description text when ranked toggle is changed
+document.getElementById('is_ranked').addEventListener('change', function() {
+    const description = document.getElementById('ranked-description');
+    if (this.checked) {
+        description.innerHTML = 'Les parties classées affectent votre classement ELO. Désactivez pour une partie amicale.';
+    } else {
+        description.innerHTML = 'Partie amicale - aucun impact sur les classements ELO.';
+    }
+});
+</script>
