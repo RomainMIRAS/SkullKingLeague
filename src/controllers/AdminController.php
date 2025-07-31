@@ -59,7 +59,14 @@ switch($action) {
             (SELECT COUNT(*) FROM users) as total_users,
             (SELECT COUNT(*) FROM games WHERE status = 'terminee') as total_games,
             (SELECT COUNT(*) FROM games WHERE status = 'en_cours') as games_in_progress,
-            (SELECT COUNT(*) FROM seasons) as total_seasons
+            (SELECT COUNT(*) FROM seasons) as total_seasons,
+            (SELECT COUNT(DISTINCT g.user1_id) + COUNT(DISTINCT g.user2_id) 
+             FROM games g 
+             WHERE g.status = 'terminee' 
+             AND g.season_id = (SELECT id FROM seasons WHERE is_current = 1 LIMIT 1)) as active_players_current_season,
+            (SELECT COUNT(*) FROM games g 
+             WHERE g.status = 'terminee' 
+             AND g.season_id = (SELECT id FROM seasons WHERE is_current = 1 LIMIT 1)) as games_current_season
         ";
         $stats = $db->query($stats_query)->fetch(PDO::FETCH_ASSOC);
         
