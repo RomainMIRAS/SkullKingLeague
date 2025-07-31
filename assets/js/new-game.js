@@ -14,6 +14,8 @@ function initNewGameInterface() {
     const randomizeBtn = document.getElementById('randomizeOrder');
     const clearAllBtn = document.getElementById('clearAll');
     const newGameForm = document.getElementById('newGameForm');
+    const rankedSwitch = document.getElementById('rankedSwitch');
+    const rankedDescription = document.getElementById('rankedDescription');
 
     let selectedPlayers = [];
     let draggedElement = null;
@@ -22,6 +24,17 @@ function initNewGameInterface() {
     if (!availablePlayersContainer || !selectedPlayersContainer) {
         console.error('Éléments requis manquants pour l\'interface de création de partie');
         return;
+    }
+
+    // Événement pour le commutateur classé/non-classé
+    if (rankedSwitch && rankedDescription) {
+        rankedSwitch.addEventListener('change', function() {
+            if (this.checked) {
+                rankedDescription.textContent = 'Cette partie affectera le classement ELO des joueurs.';
+            } else {
+                rankedDescription.textContent = 'Cette partie ne sera pas comptée dans le classement ELO (partie amicale).';
+            }
+        });
     }
 
     // Événement de clic sur les joueurs disponibles

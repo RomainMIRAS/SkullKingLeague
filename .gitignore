@@ -47,3 +47,6 @@ vendor/
 # Build artifacts
 dist/
 build/
+
+# Test files
+public/test-ui.html

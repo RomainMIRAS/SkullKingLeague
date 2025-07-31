@@ -224,6 +224,19 @@ $users = $user->getAll();
                         </div>
                     </div>
                     
+                    <div class="mt-4">
+                        <h6><i class="bi bi-trophy-fill"></i> Type de partie</h6>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_ranked" id="rankedSwitch" checked>
+                            <label class="form-check-label" for="rankedSwitch">
+                                <strong>Partie classée</strong>
+                            </label>
+                            <div class="form-text">
+                                <span id="rankedDescription">Cette partie affectera le classement ELO des joueurs.</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div id="player-count-info" class="alert alert-info mt-3" style="display: none;">
                         <i class="bi bi-info-circle-fill"></i>
                         <span id="selected-count">0</span> joueur(s) sélectionné(s)

@@ -41,6 +41,7 @@ try {
         gagnant_id INT,
         status ENUM('en_cours', 'terminee') DEFAULT 'en_cours',
         season_id INT DEFAULT NULL,
+        is_ranked BOOLEAN DEFAULT TRUE,
         FOREIGN KEY (gagnant_id) REFERENCES users(id),
         INDEX idx_game_season (season_id)
     )");

@@ -10,23 +10,24 @@ class Game {
     public $gagnant_id;
     public $status;
     public $season_id;
+    public $is_ranked;
 
     public function __construct($db) {
         $this->conn = $db;
     }
 
-    public function create($player_ids) {
+    public function create($player_ids, $is_ranked = true) {
         // Get current season
         require_once '../src/models/Season.php';
         $season_model = new Season($this->conn);
         $current_season = $season_model->getCurrentSeason();
         $season_id = $current_season ? $current_season['id'] : null;
         
-        // Créer la partie - all games are ranked by default
-        $query = "INSERT INTO " . $this->table_name . " (status, season_id) VALUES ('en_cours', ?)";
+        // Créer la partie avec le statut classé/non-classé
+        $query = "INSERT INTO " . $this->table_name . " (status, season_id, is_ranked) VALUES ('en_cours', ?, ?)";
         $stmt = $this->conn->prepare($query);
         
-        if($stmt->execute([$season_id])) {
+        if($stmt->execute([$season_id, $is_ranked ? 1 : 0])) {
             $game_id = $this->conn->lastInsertId();
             
             // Ajouter les joueurs à la partie avec l'ordre fourni

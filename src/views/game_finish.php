@@ -11,9 +11,15 @@
                 <div class="text-center mb-4">
                     <h4>🏆 Félicitations <?php echo htmlspecialchars($game_data['gagnant_pseudo']); ?> !</h4>
                     <p class="lead">Partie terminée le <?php echo date('d/m/Y à H:i', strtotime($game_data['date_partie'])); ?></p>
+                    <?php if ($game_data['is_ranked']): ?>
                     <div class="alert alert-success">
                         <i class="bi bi-trophy"></i> <strong>Partie classée</strong> - Les ELO ont été mis à jour
                     </div>
+                    <?php else: ?>
+                    <div class="alert alert-info">
+                        <i class="bi bi-heart"></i> <strong>Partie amicale</strong> - Aucun impact sur les classements ELO
+                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Classement final -->
@@ -25,7 +31,9 @@
                                 <th>Position</th>
                                 <th>Joueur</th>
                                 <th>Score Final</th>
+                                <?php if ($game_data['is_ranked']): ?>
                                 <th>Évolution ELO</th>
+                                <?php endif; ?>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,9 +98,10 @@
                                 <td>
                                     <span class="badge bg-primary fs-6"><?php echo $player['score_total']; ?> points</span>
                                 </td>
+                                <?php if ($game_data['is_ranked']): ?>
                                 <td>
                                     <?php
-                                    // All games are ranked - show ELO change
+                                    // Ranked game - show ELO change
                                     $elo_data = isset($elo_changes[$player['user_id']]) ? $elo_changes[$player['user_id']] : null;
                                     $old_elo = $elo_data ? $elo_data['old_elo'] : $user_data['elo'];
                                     $new_elo = $elo_data ? $elo_data['new_elo'] : $user_data['elo'];
@@ -119,6 +128,7 @@
                                             <?php echo $change > 0 ? '+' . $change : $change; ?>
                                         </small>
                                 </td>
+                                <?php endif; ?>
                             </tr>
                             <?php 
                             $position++;
