@@ -114,6 +114,7 @@ switch($action) {
                     $players = $game->getPlayers($game_id);
                     while ($player = $players->fetch(PDO::FETCH_ASSOC)) {
                         $user->id = $player['user_id'];
+                        $user->elo = $player['elo'];
                         $user->incrementStats($player['user_id'] == $winner_id, $season_id);
                     }
                     

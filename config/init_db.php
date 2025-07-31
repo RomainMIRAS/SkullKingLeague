@@ -97,7 +97,7 @@ try {
         old_elo INT NOT NULL,
         new_elo INT NOT NULL,
         elo_change INT NOT NULL,
-        rank INT NOT NULL COMMENT 'Rang réel du joueur dans la partie',
+        `rank` INT NOT NULL COMMENT 'Rang réel du joueur dans la partie',
         season_id INT DEFAULT NULL,
         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (game_id) REFERENCES games(id),

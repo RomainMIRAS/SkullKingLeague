@@ -113,7 +113,7 @@ class EloCalculator {
         }
         
         // Stocker les changements d'ELO dans la base de données pour référence ultérieure
-        $query_elo_history = "INSERT INTO elo_history (game_id, user_id, old_elo, new_elo, elo_change, rank) 
+        $query_elo_history = "INSERT INTO elo_history (game_id, user_id, old_elo, new_elo, elo_change, `rank`) 
                               VALUES (?, ?, ?, ?, ?, ?)";
         $stmt_elo_history = $db->prepare($query_elo_history);
         

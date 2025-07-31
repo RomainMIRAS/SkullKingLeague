@@ -61,7 +61,7 @@ class Game {
     }
 
     public function getPlayers($game_id) {
-        $query = "SELECT gp.*, u.pseudo 
+        $query = "SELECT gp.*, u.pseudo, u.elo 
                   FROM game_players gp
                   JOIN users u ON gp.user_id = u.id
                   WHERE gp.game_id = ?

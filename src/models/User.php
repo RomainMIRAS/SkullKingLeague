@@ -107,7 +107,6 @@ class User {
         
         $stmt = $this->conn->prepare($query);
         $result = $stmt->execute([$this->id]);
-        
         // Also update season-specific stats if season_id is provided
         if ($season_id && $result) {
             $this->updateSeasonStats($season_id, $won);
@@ -118,7 +117,7 @@ class User {
     
     private function updateSeasonStats($season_id, $won) {
         // Check if season stats record exists
-        $check_query = "SELECT id FROM season_stats WHERE season_id = ? AND user_id = ?";
+        $check_query = "SELECT id, final_elo FROM season_stats WHERE season_id = ? AND user_id = ?";
         $check_stmt = $this->conn->prepare($check_query);
         $check_stmt->execute([$season_id, $this->id]);
         
