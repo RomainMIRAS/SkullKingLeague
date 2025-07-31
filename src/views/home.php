@@ -16,7 +16,7 @@ $users = $user->getAll();
         </div>
 
         <div class="row g-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <i class="bi bi-plus-circle-fill text-success" style="font-size: 3rem;"></i>
@@ -29,7 +29,20 @@ $users = $user->getAll();
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-play-circle-fill text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Parties en cours</h5>
+                        <p class="card-text">Rejoignez les parties en cours</p>
+                        <a href="index.php?page=ongoing" class="btn btn-primary">
+                            Voir les parties
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <i class="bi bi-trophy-fill text-warning" style="font-size: 3rem;"></i>
@@ -42,7 +55,7 @@ $users = $user->getAll();
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card h-100 text-center">
                     <div class="card-body">
                         <i class="bi bi-clock-history text-info" style="font-size: 3rem;"></i>
@@ -87,6 +100,58 @@ $users = $user->getAll();
                                 <p>Joueur #1</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <?php
+        // Afficher les parties en cours
+        require_once '../src/models/Game.php';
+        $game = new Game($db);
+        $ongoing_games = $game->getOngoingGames(3); // Limite à 3 parties
+        ?>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-play-circle-fill text-primary"></i> Parties en cours</h5>
+                        <a href="index.php?page=ongoing" class="btn btn-sm btn-outline-primary">
+                            Voir toutes
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <?php 
+                        $ongoing_found = false;
+                        while ($ongoing_game = $ongoing_games->fetch(PDO::FETCH_ASSOC)): 
+                            $ongoing_found = true;
+                        ?>
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <strong>Partie #<?php echo $ongoing_game['id']; ?></strong>
+                                <span class="text-muted ms-2">
+                                    <?php echo htmlspecialchars($ongoing_game['players']); ?>
+                                </span>
+                                <span class="badge bg-info ms-2">
+                                    Manche <?php echo $ongoing_game['current_round']; ?>/10
+                                </span>
+                            </div>
+                            <div>
+                                <a href="index.php?page=game&action=play&id=<?php echo $ongoing_game['id']; ?>" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-play-fill"></i> Rejoindre
+                                </a>
+                            </div>
+                        </div>
+                        <?php endwhile; ?>
+
+                        <?php if (!$ongoing_found): ?>
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-gamepad2"></i>
+                            Aucune partie en cours actuellement
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

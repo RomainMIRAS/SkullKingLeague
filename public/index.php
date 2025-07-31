@@ -33,6 +33,9 @@ switch($page) {
     case 'game':
         include '../src/controllers/GameController.php';
         break;
+    case 'ongoing':
+        include '../src/views/ongoing_games.php';
+        break;
     case 'ranking':
         include '../src/views/ranking.php';
         break;

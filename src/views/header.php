@@ -25,6 +25,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'ongoing') ? 'active' : ''; ?>" href="index.php?page=ongoing">
+                            <i class="bi bi-play-circle-fill"></i> Parties en cours
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'ranking') ? 'active' : ''; ?>" href="index.php?page=ranking">
                             <i class="bi bi-trophy-fill"></i> Classement
                         </a>

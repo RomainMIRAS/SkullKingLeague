@@ -20,9 +20,16 @@
     </div>
     <div class="card-body">
         <!-- Gagnant -->
+        <?php if ($game_data['status'] == 'terminee' && $game_data['gagnant_pseudo']): ?>
         <div class="alert alert-success text-center">
             <h5><i class="bi bi-trophy-fill"></i> Gagnant : <?php echo htmlspecialchars($game_data['gagnant_pseudo']); ?></h5>
         </div>
+        <?php else: ?>
+        <div class="alert alert-info text-center">
+            <h5><i class="bi bi-play-circle-fill"></i> Partie en cours</h5>
+            <p class="mb-0">Cette partie n'est pas encore terminée.</p>
+        </div>
+        <?php endif; ?>
 
         <!-- Scores finaux -->
         <h6>Scores finaux :</h6>
