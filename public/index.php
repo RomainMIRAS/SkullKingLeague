@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Configuration du fuseau horaire
+require_once '../config/timezone.php';
+
 // Autoloader simple
 spl_autoload_register(function ($class_name) {
     $paths = [

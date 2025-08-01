@@ -1,5 +1,7 @@
 <?php
 // Migration script for Season System
+// Configuration du fuseau horaire
+require_once __DIR__ . '/timezone.php';
 echo "🏴‍☠️ Migration: Ajout du système de saisons...\n\n";
 
 // Configuration de la base de données

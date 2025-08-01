@@ -1,5 +1,7 @@
 <?php
 // Script d'initialisation de la base de données
+// Configuration du fuseau horaire
+require_once __DIR__ . '/timezone.php';
 echo "🏴‍☠️ Initialisation de Skull King League...\n\n";
 
 // Configuration de la base de données
