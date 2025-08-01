@@ -12,6 +12,7 @@
                     <strong>Attention :</strong> Cette action va :
                     <ul class="mb-0 mt-2">
                         <li>Terminer la saison actuelle et sauvegarder les résultats finaux</li>
+                        <li>Supprimer toutes les parties en cours non terminées</li>
                         <li>Remettre tous les ELO des joueurs à 1000</li>
                         <li>Créer une nouvelle saison</li>
                     </ul>
@@ -84,6 +85,7 @@
                             <li><i class="bi bi-check-circle text-success"></i> Les résultats finaux seront sauvegardés</li>
                             <li><i class="bi bi-check-circle text-success"></i> Le classement final sera archivé</li>
                             <li><i class="bi bi-check-circle text-success"></i> La saison sera marquée comme terminée</li>
+                            <li><i class="bi bi-trash text-danger"></i> Les parties en cours seront supprimées</li>
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -112,6 +114,7 @@ function confirmNewSeason() {
         `Êtes-vous sûr de vouloir commencer la nouvelle saison "${seasonName}" ?\n\n` +
         `Cette action va :\n` +
         `- Terminer la saison actuelle\n` +
+        `- Supprimer toutes les parties en cours non terminées\n` +
         `- Remettre tous les ELO à 1000\n` +
         `- Créer la nouvelle saison\n\n` +
         `Cette action est IRRÉVERSIBLE !`

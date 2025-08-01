@@ -49,6 +49,7 @@ class Season {
     /**
      * Start a new season - Admin only function
      * This ends the current season and starts a new one, resetting all player ELOs to 1000
+     * It also deletes any in-progress games
      */
     public function startNewSeason($season_name) {
         try {
@@ -60,6 +61,9 @@ class Season {
             if ($current_season) {
                 // End current season
                 $this->endSeason($current_season['id']);
+                
+                // Delete any in-progress games from the current season
+                $this->deleteInProgressGames($current_season['id']);
             }
 
             // 2. Create new season
@@ -252,6 +256,43 @@ class Season {
         $stmt->bindParam(1, $season_id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Delete all in-progress games from a specific season
+     * 
+     * @param int $season_id The ID of the season
+     * @return bool True if successful, false otherwise
+     */
+    private function deleteInProgressGames($season_id) {
+        try {
+            // Delete associated records in rounds table
+            $delete_rounds = "DELETE r FROM rounds r 
+                             JOIN games g ON r.game_id = g.id 
+                             WHERE g.season_id = ? AND g.status = 'en_cours'";
+            $stmt_rounds = $this->conn->prepare($delete_rounds);
+            $stmt_rounds->bindParam(1, $season_id);
+            $stmt_rounds->execute();
+            
+            // Delete associated records in game_players table
+            $delete_players = "DELETE gp FROM game_players gp 
+                              JOIN games g ON gp.game_id = g.id 
+                              WHERE g.season_id = ? AND g.status = 'en_cours'";
+            $stmt_players = $this->conn->prepare($delete_players);
+            $stmt_players->bindParam(1, $season_id);
+            $stmt_players->execute();
+            
+            // Delete the games
+            $delete_games = "DELETE FROM games WHERE season_id = ? AND status = 'en_cours'";
+            $stmt_games = $this->conn->prepare($delete_games);
+            $stmt_games->bindParam(1, $season_id);
+            $stmt_games->execute();
+            
+            return true;
+        } catch (Exception $e) {
+            error_log("Error deleting in-progress games: " . $e->getMessage());
+            return false;
+        }
     }
 }
 ?>
