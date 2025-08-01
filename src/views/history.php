@@ -12,14 +12,9 @@ $season = new Season($db);
 $current_season = $season->getCurrentSeason();
 $all_seasons = $season->getAllSeasons();
 
-// Get current season games (ranked only)
-$current_season_games = $current_season ? $season->getSeasonGames($current_season['id'], true, 20) : null;
+// Get current season games (ranked only) - get all games without limit (passing 0 as limit)
+$current_season_games = $current_season ? $season->getSeasonGames($current_season['id'], 0) : null;
 ?>
-
-<div class="row">
-    <div class="col-md-12">
-        <h2><i class="bi bi-clock-history text-info"></i> Historique des Parties</h2>
-        <p class="lead">Retrouvez toutes les parties terminées</p>
 
 <div class="row">
     <div class="col-md-12">
@@ -115,7 +110,7 @@ $current_season_games = $current_season ? $season->getSeasonGames($current_seaso
                             
                             // Get season stats and games
                             $season_stats = $season->getSeasonStats($season_row['id']);
-                            $season_games = $season->getSeasonGames($season_row['id'], true, 10);
+                            $season_games = $season->getSeasonGames($season_row['id'], 10);
                             $season_summary = $season->getSeasonSummary($season_row['id']);
                         ?>
                         <div class="accordion-item">

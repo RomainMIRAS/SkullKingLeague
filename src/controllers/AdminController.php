@@ -196,7 +196,7 @@ switch($action) {
         
         $season_info = $season->getById($season_id);
         $season_stats = $season->getSeasonStats($season_id);
-        $season_games = $season->getSeasonGames($season_id, true, 20);
+        $season_games = $season->getSeasonGames($season_id, 20);
         $season_summary = $season->getSeasonSummary($season_id);
         
         include '../src/views/admin_season_details.php';

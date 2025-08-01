@@ -153,20 +153,33 @@ class Season {
 
     /**
      * Get games for a specific season
+     * @param int $season_id The ID of the season
+     * @param int $limit The maximum number of games to return (0 = no limit)
+     * @return PDOStatement The query result
      */
     public function getSeasonGames($season_id, $limit = 50) {
-        $query = "SELECT g.*, u.pseudo as gagnant_pseudo,
+        // Base query without LIMIT clause
+        $base_query = "SELECT g.*, u.pseudo as gagnant_pseudo,
                          COUNT(gp.user_id) as nombre_joueurs
                   FROM games g
                   LEFT JOIN users u ON g.gagnant_id = u.id
                   LEFT JOIN game_players gp ON g.id = gp.game_id
                   WHERE g.season_id = ? AND g.status = 'terminee'
                   GROUP BY g.id
-                  ORDER BY g.date_partie DESC 
-                  LIMIT ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(1, $season_id);
-        $stmt->bindParam(2, $limit, PDO::PARAM_INT);
+                  ORDER BY g.date_partie DESC";
+                  
+        // If limit is 0, don't apply a limit
+        if ($limit <= 0) {
+            $query = $base_query;
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(1, $season_id);
+        } else {
+            $query = $base_query . " LIMIT ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(1, $season_id);
+            $stmt->bindParam(2, $limit, PDO::PARAM_INT);
+        }
+        
         $stmt->execute();
         return $stmt;
     }

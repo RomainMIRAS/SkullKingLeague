@@ -107,9 +107,7 @@
                     <div class="row">
                         <?php 
                         $players->execute(); // Reset pour parcourir à nouveau
-                        while ($player = $players->fetch(PDO::FETCH_ASSOC)): 
-                            $is_starting_player = $starting_player && $player['user_id'] == $starting_player['user_id'];
-                        ?>
+                        while ($player = $players->fetch(PDO::FETCH_ASSOC)): ?>
                         <div class="col-md-6 mb-3">
                             <label for="score_<?php echo $player['user_id']; ?>" class="form-label">
                                 <div class="d-flex align-items-center gap-2">
@@ -117,7 +115,7 @@
                                 </div>
                             </label>
                             <input type="number" 
-                                   class="form-control form-control-lg score-input <?php echo $is_starting_player ? 'border-warning' : ''; ?>" 
+                                   class="form-control form-control-lg score-input" 
                                    id="score_<?php echo $player['user_id']; ?>"
                                    name="scores[<?php echo $player['user_id']; ?>]" 
                                    step="10"
