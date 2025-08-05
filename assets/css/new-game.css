@@ -1,0 +1,184 @@
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.available-player {
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.available-player:hover {
+    border-left-color: #0d6efd;
+    background-color: #f8f9fa;
+    transform: translateX(2px);
+}
+
+.available-player.hidden {
+    display: none !important;
+}
+
+.selected-player {
+    border-left: 3px solid #198754;
+    background-color: #f8fff9;
+    margin-bottom: 8px;
+    border-radius: 8px !important;
+    transition: all 0.2s ease;
+}
+
+.selected-player:hover {
+    background-color: #e8f5e8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.player-position {
+    min-width: 24px;
+    text-align: center;
+}
+
+.move-up, .move-down {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    transition: color 0.2s ease;
+}
+
+.move-up:hover, .move-down:hover {
+    color: #0d6efd;
+    background-color: #e7f1ff;
+}
+
+.remove-player {
+    border: none;
+    background: transparent;
+    color: #dc3545;
+    transition: all 0.2s ease;
+}
+
+.remove-player:hover {
+    background-color: #f8d7da;
+    transform: scale(1.1);
+}
+
+.filter-btn.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+}
+
+#player-search:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+#available-players::-webkit-scrollbar {
+    width: 6px;
+}
+
+#available-players::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#available-players::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+#available-players::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+#selected-players::-webkit-scrollbar {
+    width: 6px;
+}
+
+#selected-players::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#selected-players::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+#selected-players::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.player-stats {
+    font-size: 11px;
+}
+
+.player-stats i {
+    font-size: 10px;
+}
+
+#selection-stats {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+#selection-stats .card-body {
+    padding: 0.75rem;
+}
+
+#no-players-found {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px dashed #dee2e6;
+}
+
+.empty-placeholder {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+}
+
+.empty-placeholder i {
+    color: #adb5bd;
+}
+
+/* Animation pour les nouveaux joueurs sélectionnés */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.selected-player {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .avatar-circle {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .player-stats {
+        font-size: 10px;
+    }
+    
+    .filter-btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}

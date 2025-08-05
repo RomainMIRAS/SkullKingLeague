@@ -14,9 +14,23 @@ function initNewGameInterface() {
     const randomizeBtn = document.getElementById('randomizeOrder');
     const clearAllBtn = document.getElementById('clearAll');
     const newGameForm = document.getElementById('newGameForm');
+    
+    // Nouveaux éléments pour la recherche et filtres
+    const playerSearch = document.getElementById('player-search');
+    const clearSearchBtn = document.getElementById('clear-search');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const noPlayersFound = document.getElementById('no-players-found');
+    const resetFiltersBtn = document.getElementById('reset-filters');
+    const selectionStats = document.getElementById('selection-stats');
+    const statsCount = document.getElementById('stats-count');
+    const statsAvgElo = document.getElementById('stats-avg-elo');
+    const statsEloRange = document.getElementById('stats-elo-range');
+    const statsTotalGames = document.getElementById('stats-total-games');
 
     let selectedPlayers = [];
     let draggedElement = null;
+    let currentFilter = 'all';
+    let searchTerm = '';
 
     // Vérifier que tous les éléments existent
     if (!availablePlayersContainer || !selectedPlayersContainer) {
@@ -24,19 +38,139 @@ function initNewGameInterface() {
         return;
     }
 
+    // Initialiser la recherche
+    initSearch();
+    
+    // Initialiser les filtres
+    initFilters();
+
     // Événement de clic sur les joueurs disponibles
     availablePlayersContainer.addEventListener('click', function(e) {
         const playerItem = e.target.closest('.available-player');
-        if (playerItem && selectedPlayers.length < 6) {
+        if (playerItem && selectedPlayers.length < 6 && !playerItem.classList.contains('hidden')) {
             selectPlayer(playerItem);
         }
     });
+
+    // Fonction d'initialisation de la recherche
+    function initSearch() {
+        if (playerSearch) {
+            playerSearch.addEventListener('input', function() {
+                searchTerm = this.value.toLowerCase().trim();
+                filterPlayers();
+            });
+
+            playerSearch.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    this.value = '';
+                    searchTerm = '';
+                    filterPlayers();
+                }
+            });
+        }
+
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', function() {
+                playerSearch.value = '';
+                searchTerm = '';
+                filterPlayers();
+                playerSearch.focus();
+            });
+        }
+
+        if (resetFiltersBtn) {
+            resetFiltersBtn.addEventListener('click', function() {
+                resetAllFilters();
+            });
+        }
+    }
+
+    // Fonction d'initialisation des filtres
+    function initFilters() {
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                setActiveFilter(filter);
+            });
+        });
+    }
+
+    // Fonction pour définir le filtre actif
+    function setActiveFilter(filter) {
+        currentFilter = filter;
+        
+        // Mettre à jour l'apparence des boutons
+        filterBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-filter') === filter) {
+                btn.classList.add('active');
+            }
+        });
+
+        filterPlayers();
+    }
+
+    // Fonction pour réinitialiser tous les filtres
+    function resetAllFilters() {
+        currentFilter = 'all';
+        searchTerm = '';
+        
+        if (playerSearch) {
+            playerSearch.value = '';
+        }
+        
+        filterBtns.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-filter') === 'all') {
+                btn.classList.add('active');
+            }
+        });
+
+        filterPlayers();
+    }
+
+    // Fonction pour filtrer les joueurs (par nom uniquement)
+    function filterPlayers() {
+        const playerItems = availablePlayersContainer.querySelectorAll('.available-player');
+        let visibleCount = 0;
+
+        playerItems.forEach(item => {
+            const playerName = item.getAttribute('data-player-name').toLowerCase();
+            let shouldShow = true;
+
+            // Filtre par recherche
+            if (searchTerm && !playerName.includes(searchTerm)) {
+                shouldShow = false;
+            }
+
+            // Appliquer la visibilité
+            if (shouldShow) {
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+
+        // Afficher/masquer le message "aucun joueur trouvé"
+        if (noPlayersFound) {
+            if (visibleCount === 0) {
+                noPlayersFound.style.display = 'block';
+                availablePlayersContainer.style.display = 'none';
+            } else {
+                noPlayersFound.style.display = 'none';
+                availablePlayersContainer.style.display = 'block';
+            }
+        }
+    }
 
     // Fonction pour sélectionner un joueur
     function selectPlayer(playerElement) {
         const playerId = playerElement.getAttribute('data-player-id');
         const playerName = playerElement.getAttribute('data-player-name');
         const playerElo = playerElement.getAttribute('data-player-elo');
+        const playerGames = playerElement.getAttribute('data-player-games');
+        const playerVictories = playerElement.getAttribute('data-player-victories');
 
         // Vérifier si le joueur n'est pas déjà sélectionné
         if (selectedPlayers.find(p => p.id === playerId)) {
@@ -47,7 +181,9 @@ function initNewGameInterface() {
         const playerData = {
             id: playerId,
             name: playerName,
-            elo: playerElo
+            elo: playerElo,
+            games: playerGames,
+            victories: playerVictories
         };
         selectedPlayers.push(playerData);
 
@@ -71,12 +207,25 @@ function initNewGameInterface() {
         playerElement.setAttribute('draggable', 'true');
         playerElement.style.cursor = 'move';
 
+        // Créer l'avatar avec la première lettre du nom
+        const avatarColor = getAvatarColor(playerData.name);
+        const avatarLetter = playerData.name.charAt(0).toUpperCase();
+
         playerElement.innerHTML = `
             <div class="d-flex align-items-center flex-grow-1">
                 <span class="badge bg-primary rounded-pill me-2 player-position">${position}</span>
+                <div class="player-avatar me-2">
+                    <div class="avatar-circle" style="background-color: ${avatarColor}">
+                        ${avatarLetter}
+                    </div>
+                </div>
                 <div class="flex-grow-1">
                     <strong>${playerData.name}</strong>
-                    <small class="text-muted d-block">${playerData.elo} ELO</small>
+                    <div class="player-stats small text-muted">
+                        <i class="bi bi-trophy"></i> ${playerData.elo} ELO
+                        ${parseInt(playerData.games) > 0 ? `• <i class="bi bi-controller"></i> ${playerData.games} parties` : ''}
+                        ${parseInt(playerData.victories) > 0 ? `• <i class="bi bi-star-fill text-warning"></i> ${playerData.victories} victoires` : ''}
+                    </div>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-1">
@@ -123,6 +272,17 @@ function initNewGameInterface() {
         playerElement.addEventListener('dragend', handleDragEnd);
 
         selectedPlayersContainer.appendChild(playerElement);
+    }
+
+    // Fonction pour générer une couleur d'avatar basée sur le nom
+    function getAvatarColor(name) {
+        const colors = [
+            '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6',
+            '#1abc9c', '#e67e22', '#34495e', '#16a085', '#8e44ad',
+            '#27ae60', '#d35400', '#c0392b', '#2980b9', '#f1c40f'
+        ];
+        const index = name.charCodeAt(0) % colors.length;
+        return colors[index];
     }
 
     // Gestionnaires de drag and drop
@@ -232,6 +392,7 @@ function initNewGameInterface() {
             hideEmptyPlaceholder();
         }
 
+        // Ne plus gérer le badge compteur de joueurs ni les stats de sélection
         // Mettre à jour les informations
         if (selectedCountSpan) {
             selectedCountSpan.textContent = count;
@@ -259,6 +420,36 @@ function initNewGameInterface() {
                 startGameBtn.innerHTML = `<i class="bi bi-play-fill"></i> Commencer avec ${count} joueur${count > 1 ? 's' : ''}`;
             } else {
                 startGameBtn.innerHTML = '<i class="bi bi-play-fill"></i> Commencer la partie';
+            }
+        }
+    }
+
+    // Fonction pour mettre à jour les statistiques de sélection
+    function updateSelectionStats() {
+        const count = selectedPlayers.length;
+        
+        if (selectionStats) {
+            if (count > 0) {
+                selectionStats.style.display = 'block';
+                
+                // Calculer l'ELO moyen
+                const totalElo = selectedPlayers.reduce((sum, player) => sum + parseInt(player.elo), 0);
+                const avgElo = Math.round(totalElo / count);
+                
+                // Calculer l'écart d'ELO
+                const elos = selectedPlayers.map(player => parseInt(player.elo)).sort((a, b) => a - b);
+                const eloRange = elos[elos.length - 1] - elos[0];
+                
+                // Calculer le total des parties jouées
+                const totalGames = selectedPlayers.reduce((sum, player) => sum + parseInt(player.games || 0), 0);
+                
+                // Mettre à jour les statistiques
+                if (statsCount) statsCount.textContent = count;
+                if (statsAvgElo) statsAvgElo.textContent = avgElo;
+                if (statsEloRange) statsEloRange.textContent = eloRange;
+                if (statsTotalGames) statsTotalGames.textContent = totalGames;
+            } else {
+                selectionStats.style.display = 'none';
             }
         }
     }
@@ -365,4 +556,5 @@ function initNewGameInterface() {
 
     // Initialisation
     updateInterface();
+    filterPlayers();
 }

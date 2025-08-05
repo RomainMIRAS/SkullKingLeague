@@ -174,9 +174,26 @@ $users = $user->getAll();
                     <div class="row">
                         <!-- Liste des joueurs disponibles -->
                         <div class="col-md-6">
-                            <h6><i class="bi bi-people-fill"></i> Joueurs disponibles</h6>
-                            <p class="text-muted small">Cliquez pour sélectionner (1 à 6 joueurs)</p>
-                            <div id="available-players" class="list-group">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6><i class="bi bi-people-fill"></i> Joueurs disponibles</h6>
+                            </div>
+                            
+                            <!-- Barre de recherche -->
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="player-search" 
+                                       placeholder="Rechercher un joueur..." 
+                                       autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" id="clear-search" title="Effacer la recherche">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                            
+                            <p class="text-muted small mb-2">Cliquez pour sélectionner (1 à 6 joueurs)</p>
+                            
+                            <div id="available-players" class="list-group" style="max-height: 300px; overflow-y: auto;">
                                 <?php 
                                 $users->execute(); // Reset le curseur
                                 while ($row = $users->fetch(PDO::FETCH_ASSOC)): 
@@ -185,41 +202,87 @@ $users = $user->getAll();
                                      data-player-id="<?php echo $row['id']; ?>"
                                      data-player-name="<?php echo htmlspecialchars($row['pseudo']); ?>"
                                      data-player-elo="<?php echo $row['elo']; ?>"
-                                     style="cursor: pointer;">
+                                     data-player-created="<?php echo $row['created_at'] ?? ''; ?>"
+                                     style="cursor: pointer; transition: all 0.2s ease;">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <strong><?php echo htmlspecialchars($row['pseudo']); ?></strong>
+                                        <div class="d-flex align-items-center">
+                                            <div class="player-avatar me-2">
+                                                <div class="avatar-circle" style="background-color: <?php echo sprintf('#%06X', crc32($row['pseudo'])); ?>">
+                                                    <?php echo strtoupper(substr($row['pseudo'], 0, 1)); ?>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <strong class="player-name">
+                                                    <?php echo htmlspecialchars($row['pseudo']); ?>
+                                                </strong>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <span class="badge bg-info"><?php echo $row['elo']; ?> ELO</span>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge <?php echo $row['elo'] >= 1500 ? 'bg-warning' : 'bg-info'; ?> me-2"><?php echo $row['elo']; ?></span>
+                                            <i class="bi bi-plus-circle text-success"></i>
                                         </div>
                                     </div>
                                 </div>
                                 <?php endwhile; ?>
                             </div>
+                            
+                            <!-- Message quand aucun joueur trouvé -->
+                            <div id="no-players-found" class="text-center text-muted py-4" style="display: none;">
+                                <i class="bi bi-search" style="font-size: 2rem;"></i>
+                                <p class="mt-2">Aucun joueur trouvé</p>
+                            </div>
                         </div>
                         
                         <!-- Ordre de jeu -->
                         <div class="col-md-6">
-                            <h6><i class="bi bi-list-ol"></i> Ordre de jeu</h6>
-                            <p class="text-muted small">
-                                <span class="d-none d-md-inline">Glissez-déposez pour réorganiser ou </span>
-                                utilisez les boutons ↑↓
-                            </p>
-                            <div id="selected-players" class="mb-3" style="min-height: 200px;">
-                                <div id="empty-placeholder" class="text-center text-muted p-4 border border-dashed rounded">
-                                    <i class="bi bi-arrow-left"></i>
-                                    <br>Sélectionnez des joueurs
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6><i class="bi bi-list-ol"></i> Ordre de jeu</h6>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="randomizeOrder" title="Mélanger l'ordre">
+                                        <i class="bi bi-shuffle"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" id="clearAll" title="Tout effacer">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
                                 </div>
                             </div>
                             
-                            <div class="d-flex gap-2 mb-3">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" id="randomizeOrder">
-                                    <i class="bi bi-shuffle"></i> Ordre aléatoire
-                                </button>
-                                <button type="button" class="btn btn-outline-danger btn-sm" id="clearAll">
-                                    <i class="bi bi-x-circle"></i> Tout effacer
-                                </button>
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="d-none d-md-inline">Glissez-déposez pour réorganiser ou </span>
+                                utilisez les boutons ↑↓
+                            </p>
+                            
+                            <div id="selected-players" class="mb-3" style="min-height: 250px; max-height: 350px; overflow-y: auto;">
+                                <div id="empty-placeholder" class="text-center text-muted p-5 border border-dashed rounded bg-light">
+                                    <i class="bi bi-arrow-left" style="font-size: 2rem; opacity: 0.5;"></i>
+                                    <p class="mt-3 mb-0">Sélectionnez des joueurs pour commencer</p>
+                                    <small class="text-muted">Cliquez sur les joueurs disponibles à gauche</small>
+                                </div>
+                            </div>
+                            
+                            <!-- Statistiques de la sélection -->
+                            <div id="selection-stats" class="card bg-light" style="display: none;">
+                                <div class="card-body py-2">
+                                    <div class="row text-center">
+                                        <div class="col-3">
+                                            <small class="text-muted">Joueurs</small>
+                                            <div class="fw-bold" id="stats-count">0</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <small class="text-muted">ELO Moyen</small>
+                                            <div class="fw-bold text-primary" id="stats-avg-elo">0</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <small class="text-muted">Écart</small>
+                                            <div class="fw-bold text-info" id="stats-elo-range">0</div>
+                                        </div>
+                                        <div class="col-3">
+                                            <small class="text-muted">Expérience</small>
+                                            <div class="fw-bold text-success" id="stats-total-games">0</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -245,5 +308,7 @@ $users = $user->getAll();
     </div>
 </div>
 
+<!-- Styles CSS pour l'amélioration visuelle -->
+<link rel="stylesheet" href="../assets/css/new-game.css">
 <!-- Inclure le JavaScript pour la nouvelle interface de création de partie -->
 <script src="../assets/js/new-game.js"></script>
