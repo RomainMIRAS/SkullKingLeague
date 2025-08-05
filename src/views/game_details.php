@@ -1,4 +1,12 @@
 <?php if ($game_data): ?>
+<?php if ($game_data['status'] == 'en_cours'): ?>
+<script>
+  // Rafraîchit la page toutes les 10 secondes (ajuste la valeur si besoin)
+  setTimeout(function() {
+    window.location.reload();
+  }, 10000); // 10000 ms = 10 secondes
+</script>
+<?php endif; ?>
 <div class="card">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
