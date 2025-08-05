@@ -172,7 +172,18 @@
                         </thead>
                         <tbody>
                             <?php for ($i = $current_round - 1; $i >= 1; $i--): ?>
-                            <tr>
+                            <tr class="edit-round-row" style="cursor:pointer;" 
+                                data-round="<?php echo $i; ?>"
+                                data-scores='<?php
+                                    $scores = [];
+                                    $players->execute();
+                                    while ($player = $players->fetch(PDO::FETCH_ASSOC)) {
+                                        $scores[$player['user_id']] = isset($rounds_data[$i][$player['user_id']]['score'])
+                                            ? $rounds_data[$i][$player['user_id']]['score']
+                                            : "";
+                                    }
+                                    echo json_encode($scores);
+                                ?>'>
                                 <td><strong>Manche <?php echo $i; ?></strong></td>
                                 <?php 
                                 $players->execute();
@@ -194,6 +205,26 @@
         </div>
         <?php endif; ?>
     </div>
+</div>
+
+<div class="modal fade" id="editRoundModal" tabindex="-1" aria-labelledby="editRoundModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="editRoundForm" method="POST" action="index.php?page=game&action=edit_round" onsubmit="return validateEditScores()">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editRoundModalLabel">Modifier la manche <span id="editRoundNumber"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="game_id" value="<?php echo $game_id; ?>">
+        <input type="hidden" name="round_number" id="edit_round_number" value="">
+        <div id="editScoresInputs"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -298,7 +329,47 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Edit round modal logic (row click)
+    const editModal = new bootstrap.Modal(document.getElementById('editRoundModal'));
+    document.querySelectorAll('.edit-round-row').forEach(row => {
+        row.addEventListener('click', function() {
+            const roundNumber = this.getAttribute('data-round');
+            const scores = JSON.parse(this.getAttribute('data-scores'));
+            document.getElementById('editRoundNumber').textContent = roundNumber;
+            document.getElementById('edit_round_number').value = roundNumber;
+            // Build inputs for each player
+            let html = '';
+            <?php $players->execute(); while ($player = $players->fetch(PDO::FETCH_ASSOC)): ?>
+                html += `<div class=\"mb-3\">
+                    <label for=\"edit_score_<?php echo $player['user_id']; ?>\" class=\"form-label\"><?php echo htmlspecialchars($player['pseudo']); ?></label>
+                    <input type=\"number\" class=\"form-control edit-score-input\" id=\"edit_score_<?php echo $player['user_id']; ?>\" name=\"scores[<?php echo $player['user_id']; ?>]\" value=\"${scores['<?php echo $player['user_id']; ?>'] ?? 0}\" step=\"10\" required>
+                </div>`;
+            <?php endwhile; ?>
+            document.getElementById('editScoresInputs').innerHTML = html;
+            editModal.show();
+        });
+    });
 });
+
+function validateEditScores() {
+    const inputs = document.querySelectorAll('.edit-score-input');
+    let valid = true;
+    inputs.forEach(input => {
+        const value = parseInt(input.value);
+        if (isNaN(value) || value === 0 || value % 10 !== 0) {
+            valid = false;
+            input.classList.add('is-invalid');
+        } else {
+            input.classList.remove('is-invalid');
+        }
+    });
+    if (!valid) {
+        alert('Veuillez entrer des scores valides (multiples de 10 uniquement, zéro non autorisé).');
+        return false;
+    }
+    return true;
+}
 
 // Fonction pour afficher le total en temps réel
 function updateLiveTotal() {

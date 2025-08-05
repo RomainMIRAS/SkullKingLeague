@@ -106,6 +106,25 @@ class Game {
         return true;
     }
 
+    public function updateRound($game_id, $numero_manche, $scores) {
+        // Update each player's score for the given round
+        $query = "UPDATE rounds SET score = ? WHERE game_id = ? AND numero_manche = ? AND player_id = ?";
+        $stmt = $this->conn->prepare($query);
+        foreach ($scores as $player_id => $score) {
+            $stmt->bindParam(1, $score);
+            $stmt->bindParam(2, $game_id);
+            $stmt->bindParam(3, $numero_manche);
+            $stmt->bindParam(4, $player_id);
+            $stmt->execute();
+        }
+        // Recalculate player totals
+        $players = $this->getPlayers($game_id);
+        while ($player = $players->fetch(PDO::FETCH_ASSOC)) {
+            $this->updatePlayerScore($game_id, $player['user_id'], 0); // 0 is ignored, recalculates from all rounds
+        }
+        return true;
+    }
+
     private function updatePlayerScore($game_id, $player_id, $score) {
         // Au lieu d'ajouter directement le score, recalculons le total à partir de toutes les manches
         // 1. Récupérer tous les scores de ce joueur pour cette partie

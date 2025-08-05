@@ -135,6 +135,42 @@ switch($action) {
         header("Location: index.php?page=game&action=play&id=" . ($_POST['game_id'] ?? ''));
         exit;
 
+    case 'edit_round':
+        if ($_POST && isset($_POST['game_id']) && isset($_POST['scores']) && isset($_POST['round_number'])) {
+            $game_id = $_POST['game_id'];
+            $scores = $_POST['scores'];
+            $round_number = $_POST['round_number'];
+            // Validation des scores
+            $valid = true;
+            $error_message = '';
+            foreach($scores as $player_id => $score) {
+                if (!is_numeric($score)) {
+                    $valid = false;
+                    $error_message = 'Tous les scores doivent être des nombres.';
+                    break;
+                }
+                $score_int = intval($score);
+                if ($score_int % 10 !== 0) {
+                    $valid = false;
+                    $error_message = 'Tous les scores doivent être des multiples de 10.';
+                    break;
+                }
+                if ($score_int === 0) {
+                    $valid = false;
+                    $error_message = 'Le score ne peut pas être zéro.';
+                    break;
+                }
+            }
+            if ($valid) {
+                $game->updateRound($game_id, $round_number, $scores);
+            } else {
+                header("Location: index.php?page=game&action=play&id=" . $game_id . "&error=" . urlencode($error_message));
+                exit;
+            }
+        }
+        header("Location: index.php?page=game&action=play&id=" . ($_POST['game_id'] ?? ''));
+        exit;
+
     case 'finish':
         $game_id = $_GET['id'] ?? null;
         if (!$game_id) {
