@@ -39,6 +39,29 @@
                             <i class="bi bi-clock-history"></i> Historique
                         </a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?php echo (isset($_GET['page']) && ($_GET['page'] == 'rules' || $_GET['page'] == 'custom_rules')) ? 'active' : ''; ?>" 
+                           href="#" id="rulesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-book-fill"></i> Règles
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="rulesDropdown">
+                            <li>
+                                <a class="dropdown-item <?php echo (isset($_GET['page']) && $_GET['page'] == 'rules') ? 'active' : ''; ?>" 
+                                   href="index.php?page=rules">
+                                    <i class="bi bi-trophy text-warning"></i> Règles Officielles
+                                    <small class="d-block text-muted">Pour les parties classées</small>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item <?php echo (isset($_GET['page']) && $_GET['page'] == 'custom_rules') ? 'active' : ''; ?>" 
+                                   href="index.php?page=custom_rules">
+                                    <i class="bi bi-gear text-secondary"></i> Règles Custom
+                                    <small class="d-block text-muted">Extensions & variantes</small>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'admin') ? 'active' : ''; ?>" href="index.php?page=admin">
                             <i class="bi bi-gear-fill"></i> Admin

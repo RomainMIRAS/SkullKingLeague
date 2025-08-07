@@ -69,6 +69,53 @@ $users = $user->getAll();
             </div>
         </div>
 
+        <!-- Section Règles -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card bg-light border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-book-fill"></i> Règles du Jeu</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="bi bi-trophy-fill text-warning" style="font-size: 2rem;"></i>
+                                    <div class="ms-3">
+                                        <h6 class="mb-1">Règles Officielles</h6>
+                                        <small class="text-muted">Pour les parties classées et le système ELO</small>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <a href="index.php?page=rules" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-arrow-right"></i> Consulter
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="bi bi-gear-fill text-secondary" style="font-size: 2rem;"></i>
+                                    <div class="ms-3">
+                                        <h6 class="mb-1">Règles Custom</h6>
+                                        <small class="text-muted">Extensions et variantes pour parties amicales</small>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <a href="index.php?page=custom_rules" class="btn btn-secondary btn-sm">
+                                            <i class="bi bi-arrow-right"></i> Découvrir
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alert alert-info mb-0 mt-2">
+                            <i class="bi bi-info-circle-fill"></i>
+                            <strong>Nouveau joueur ?</strong> Consultez d'abord les règles officielles pour comprendre les bases du Skull King.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <?php
         // Statistiques rapides
         $stats_query = "SELECT 

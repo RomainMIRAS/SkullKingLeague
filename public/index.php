@@ -45,6 +45,12 @@ switch($page) {
     case 'history':
         include '../src/views/history.php';
         break;
+    case 'rules':
+        include '../src/views/rules.php';
+        break;
+    case 'custom_rules':
+        include '../src/views/custom_rules.php';
+        break;
     case 'admin':
         include '../src/controllers/AdminController.php';
         break;

@@ -249,6 +249,120 @@ footer {
     border-color: #007bff !important;
 }
 
+/* Styles spécifiques pour les pages de règles */
+.rules-page h5 {
+    color: var(--skull-primary);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 0.5rem;
+}
+
+.rules-page h6 {
+    color: #495057;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.rules-card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.rules-card:hover {
+    transform: translateY(-2px);
+}
+
+.phase-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.phase-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.special-card {
+    margin-bottom: 1rem;
+}
+
+.special-card .card-header {
+    font-weight: 600;
+}
+
+.scoring-example {
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.custom-rules-accordion .accordion-button {
+    background-color: #f8f9fa;
+    color: var(--skull-primary);
+    font-weight: 500;
+}
+
+.custom-rules-accordion .accordion-button:not(.collapsed) {
+    background-color: var(--skull-primary);
+    color: white;
+}
+
+.custom-rules-accordion .accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.rules-navigation {
+    position: sticky;
+    top: 20px;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-special-skull {
+    border-color: #dc3545;
+    background: linear-gradient(135deg, #fff5f5, #fff);
+}
+
+.card-special-siren {
+    border-color: #ffc107;
+    background: linear-gradient(135deg, #fffbf0, #fff);
+}
+
+.card-special-pirate {
+    border-color: #343a40;
+    background: linear-gradient(135deg, #f8f9fa, #fff);
+}
+
+.card-special-escape {
+    border-color: #6c757d;
+    background: linear-gradient(135deg, #f8f9fa, #fff);
+}
+
+/* Responsive pour les pages de règles */
+@media (max-width: 768px) {
+    .rules-page h5 {
+        font-size: 1.25rem;
+        margin-top: 1.5rem;
+    }
+    
+    .phase-card .card-body {
+        padding: 1rem 0.75rem;
+    }
+    
+    .special-card .card-body {
+        padding: 0.75rem;
+    }
+    
+    .rules-navigation {
+        position: static;
+        margin-bottom: 1rem;
+    }
+}
+
 .available-player.selected {
     background-color: #d1ecf1 !important;
     border-color: #bee5eb !important;
