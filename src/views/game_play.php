@@ -92,7 +92,7 @@
                                 <small class="text-muted">
                                     <i class="bi bi-lightbulb"></i> 
                                     <strong>Règle :</strong> Entrez les points gagnés ou perdus pour cette manche (pas les points cumulés). 
-                                    Les scores doivent être des multiples de 10 (exemples : 10, 20, -10, -30, 50...) et ne peuvent pas être zéro.
+                                    Les scores doivent être des multiples de 10 (exemples : 0, 10, 20, -10, -30, 50...).
                                 </small>
                             </div>
                             <div class="col-md-4">
@@ -243,14 +243,6 @@ function validateScores() {
             return;
         }
         
-        // Vérifier que c'est différent de zéro
-        if (value === 0) {
-            valid = false;
-            input.classList.add('is-invalid');
-            input.setAttribute('title', 'Le score ne peut pas être zéro');
-            return;
-        }
-        
         // Vérifier que c'est un multiple de 10
         if (value % 10 !== 0) {
             valid = false;
@@ -264,7 +256,7 @@ function validateScores() {
     });
     
     if (!valid) {
-        alert('Veuillez entrer des scores valides (multiples de 10 uniquement, zéro non autorisé).\nExemples: 10, 20, -10, -30, 50...');
+        alert('Veuillez entrer des scores valides (multiples de 10 uniquement).\nExemples: 0, 10, 20, -10, -30, 50...');
         return false;
     }
     
@@ -294,11 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            if (value === 0) {
-                this.classList.remove('is-valid');
-                this.classList.add('is-invalid');
-                this.setAttribute('title', 'Le score ne peut pas être zéro');
-            } else if (value % 10 === 0) {
+            if (value % 10 === 0) {
                 this.classList.remove('is-invalid');
                 this.classList.add('is-valid');
                 this.setAttribute('title', 'Score valide');
@@ -314,18 +302,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Correction automatique lors de la perte de focus
         input.addEventListener('blur', function() {
             const value = parseInt(this.value);
-            if (!isNaN(value)) {
-                if (value === 0) {
-                    // Si c'est zéro, remplacer par 10 pour éviter le 0
-                    this.value = 10;
-                    this.dispatchEvent(new Event('input'));
-                } else if (value % 10 !== 0) {
-                    // Arrondir au multiple de 10 le plus proche
-                    const rounded = Math.round(value / 10) * 10;
-                    // Si l'arrondi donne 0, choisir 10 ou -10 selon le signe original
-                    this.value = rounded === 0 ? (value > 0 ? 10 : -10) : rounded;
-                    this.dispatchEvent(new Event('input'));
-                }
+            if (!isNaN(value) && value % 10 !== 0) {
+                // Arrondir au multiple de 10 le plus proche
+                const rounded = Math.round(value / 10) * 10;
+                this.value = rounded;
+                this.dispatchEvent(new Event('input'));
             }
         });
     });
@@ -357,7 +338,7 @@ function validateEditScores() {
     let valid = true;
     inputs.forEach(input => {
         const value = parseInt(input.value);
-        if (isNaN(value) || value === 0 || value % 10 !== 0) {
+        if (isNaN(value) || value % 10 !== 0) {
             valid = false;
             input.classList.add('is-invalid');
         } else {
@@ -365,7 +346,7 @@ function validateEditScores() {
         }
     });
     if (!valid) {
-        alert('Veuillez entrer des scores valides (multiples de 10 uniquement, zéro non autorisé).');
+        alert('Veuillez entrer des scores valides (multiples de 10 uniquement).');
         return false;
     }
     return true;
@@ -379,7 +360,7 @@ function updateLiveTotal() {
     
     inputs.forEach(input => {
         const value = parseInt(input.value);
-        if (!isNaN(value) && value % 10 === 0 && value !== 0) {
+        if (!isNaN(value) && value % 10 === 0) {
             total += value;
             validInputs++;
         }
