@@ -13,7 +13,13 @@ class EloCalculator {
         
         // Nouveau ELO
         $new_elo = $player_elo + self::K_FACTOR * ($result - $expected);
-        
+
+        // Ajout d'une légère inflation pour les joueurs en progression
+        if ($new_elo > $player_elo) {
+            $inflation_rate = 1.03; // 3% d'inflation ~ 
+            $new_elo *= $inflation_rate;
+        }
+
         return round($new_elo);
     }
     
